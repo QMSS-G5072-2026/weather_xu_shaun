@@ -1,5 +1,7 @@
 # weather_xx2510
 
+![ci](https://github.com/QMSS-G5072-2026/weather_xu_shaun/actions/workflows/ci.yml/badge.svg)
+
 Weather station utilities for QMSS G5072
 
 ## Installation
