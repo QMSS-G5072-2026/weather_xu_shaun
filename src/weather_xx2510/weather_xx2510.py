@@ -13,15 +13,30 @@ def celsius_to_fahrenheit(celsius: float) -> float:
     """
     Convert a temperature from degrees Celsius to degrees Fahrenheit.
 
-    Args:
-        celsius: Temperature in degrees Celsius.
+    Parameters
+    ----------
+    celsius : float
+      Temperature in degrees Celsius.
 
-    Returns:
-        Temperature in degrees Fahrenheit.
+    Returns
+    -------
+    float
+      Temperature in degrees Fahrenheit.
 
-    Raises:
-        TypeError: If `celsius` is not an int or a float.
-        ValueError: If `celsius` is below absolute zero (-273.15 C).
+    Raises
+    ------
+    TypeError
+      If `celsius` is not an int or a float.
+    ValueError
+      If `celsius` is below absolute zero (-273.15 C).
+
+    Examples
+    --------
+    >>> import weather_xx2510
+    >>> weather_xx2510.celsius_to_fahrenheit(100)
+    212.0
+    >>> weather_xx2510.celsius_to_fahrenheit(-40)
+    -40.0
     """
     if isinstance(celsius, bool) or not isinstance(celsius, (int, float)):
         raise TypeError("celsius must be a number")
@@ -34,14 +49,26 @@ def summarize_temperatures(temps: list[float]) -> dict[str, float]:
     """
     Summarize a list of temperature readings, ignoring missing values (NaN).
 
-    Args:
-        temps: Temperature readings. Missing readings are stored as float("nan").
+    Parameters
+    ----------
+    temps : list of float
+      Temperature readings. Missing readings are stored as float("nan").
 
-    Returns:
-        A dictionary with the keys "mean", "min", "max", and "n_missing".
+    Returns
+    -------
+    dict
+      A dictionary with the keys "mean", "min", "max", and "n_missing".
 
-    Raises:
-        ValueError: If there are no valid (non-missing) readings.
+    Raises
+    ------
+    ValueError
+      If there are no valid (non-missing) readings.
+
+    Examples
+    --------
+    >>> import weather_xx2510
+    >>> weather_xx2510.summarize_temperatures([10.0, float("nan"), 20.0, 30.0])
+    {'mean': 20.0, 'min': 10.0, 'max': 30.0, 'n_missing': 1}
     """
     valid = [t for t in temps if not math.isnan(t)]
     if not valid:
@@ -58,17 +85,34 @@ def clean_readings(df: pd.DataFrame) -> pd.DataFrame:
     """
     Clean raw station readings.
 
-    Steps:
-        1. Drop rows where `temp_c` is missing.
-        2. Drop physically implausible readings (outside -90 C to 60 C, inclusive bounds are kept).
-        3. Add a `temp_f` column with the temperature in Fahrenheit.
-        4. Sort by `station`, then `date`, and reset the index.
+    The function drops rows where `temp_c` is missing, drops physically
+    implausible readings (outside -90 C to 60 C; the bounds are kept),
+    adds a `temp_f` column with the temperature in Fahrenheit, sorts by
+    `station` and then `date`, and resets the index.
 
-    Args:
-        df: DataFrame with the columns `station`, `date`, and `temp_c`.
+    Parameters
+    ----------
+    df : pandas.DataFrame
+      DataFrame with the columns `station`, `date`, and `temp_c`.
 
-    Returns:
-        A new, cleaned DataFrame. The input DataFrame is not modified.
+    Returns
+    -------
+    pandas.DataFrame
+      A new, cleaned DataFrame. The input DataFrame is not modified.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import weather_xx2510
+    >>> raw = pd.DataFrame({
+    ...     "station": ["JFK", "CPK", "LGA"],
+    ...     "date": ["2026-07-02", "2026-07-01", "2026-07-01"],
+    ...     "temp_c": [30.0, 25.0, 999.0],
+    ... })
+    >>> weather_xx2510.clean_readings(raw)
+      station        date  temp_c  temp_f
+    0     CPK  2026-07-01    25.0    77.0
+    1     JFK  2026-07-02    30.0    86.0
     """
     cleaned = df.dropna(subset=["temp_c"])
     in_range = cleaned["temp_c"].between(MIN_PLAUSIBLE_C, MAX_PLAUSIBLE_C)
